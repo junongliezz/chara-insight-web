@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 
 // ⚠️ Vercelデプロイ時、このファイルは削除されるため、環境変数を使用します。
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
