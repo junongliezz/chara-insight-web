@@ -12,8 +12,9 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import Link from 'next/link';
 
-// Chart.jsのコンポーネネントを登録
+// Chart.jsのコンポーネネントを登録 (変更なし)
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,17 +25,12 @@ ChartJS.register(
   Legend
 );
 
-// ⚠️ Vercelデプロイ時、このファイルは削除されるため、環境変数を使用します。
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
+// ⚠️ グローバルな Supabase クライアント初期化は削除済み
 
 const CharacterDetail = ({ character, trendData }) => {
   if (!character) return <div className="p-8">キャラクターが見つかりません。</div>;
   
-  // グラフ描画用のデータ整形
+  // グラフ描画用のデータ整形 (変更なし)
   const chartData = {
     labels: trendData.map(d => d.date),
     datasets: [
@@ -72,7 +68,7 @@ const CharacterDetail = ({ character, trendData }) => {
           text: 'Googleトレンド指数 (0-100)',
         },
         min: 0,
-        max: 100, // Googleトレンドの最大値に合わせる
+        max: 100,
       },
       yX: {
         type: 'linear',
@@ -122,6 +118,11 @@ const CharacterDetail = ({ character, trendData }) => {
 export async function getServerSideProps(context) {
   const { id } = context.params;
 
+  // ✅ 修正点: クライアントの初期化をここで行う (クラッシュ対策)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  
   // 1. キャラクター情報を取得
   const { data: character } = await supabase
     .from('characters')
