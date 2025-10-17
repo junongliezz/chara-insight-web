@@ -3,13 +3,9 @@ import Head from 'next/head';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 
-// ⚠️ Vercelデプロイ時、このファイルは削除されるため、環境変数を使用します。
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// ⚠️ グローバルな Supabase クライアント初期化は削除済み
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// キャラクターカードコンポーネント
+// キャラクターカードコンポーネント (変更なし)
 const CharacterCard = ({ char, trend }) => {
   const googleIndex = trend ? trend.google_index : 0;
   
@@ -67,6 +63,11 @@ export default function Home({ characters, trends }) {
 
 // サーバーサイドでのデータ取得
 export async function getServerSideProps() {
+  // ✅ 修正点: クライアントの初期化をここで行う (クラッシュ対策)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
   // DBから全キャラクター情報を取得
   const { data: characters } = await supabase.from('characters').select('*');
 
@@ -87,7 +88,6 @@ export async function getServerSideProps() {
       .eq('date', latestDate);
     trends = latestTrends;
   }
-
 
   return {
     props: {
